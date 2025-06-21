@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'qr_page.dart';
+import 'badge_page.dart';
+import 'nearby_page.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -7,8 +9,26 @@ class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final actions = [
-      {'label': 'Nearby Sites', 'icon': Icons.place, 'onTap': () {}},
-      {'label': 'Badges', 'icon': Icons.emoji_events, 'onTap': () {}},
+      {
+        'label': 'Nearby Sites',
+        'icon': Icons.place,
+        'onTap': () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const NearbyPage()),
+          );
+        },
+      },
+      {
+        'label': 'Badges',
+        'icon': Icons.emoji_events,
+        'onTap': () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const BadgePage()),
+          );
+        },
+      },
       {'label': 'Local Food Deals', 'icon': Icons.restaurant, 'onTap': () {}},
       {'label': 'Audio Guides', 'icon': Icons.headphones, 'onTap': () {}},
       {'label': 'Multilingual Info', 'icon': Icons.language, 'onTap': () {}},
