@@ -19,11 +19,11 @@ class MyApp extends StatelessWidget {
         future: StartupService.getStartPage(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return LogoPage(); // Show splash while checking login
+            return LogoPage();
           } else if (snapshot.hasData) {
             return snapshot.data!;
           } else {
-            return LogoPage(); // fallback
+            return LogoPage();
           }
         },
       ),

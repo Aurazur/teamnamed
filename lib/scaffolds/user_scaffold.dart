@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../pages/dashboard_page.dart';
 import '../pages/settings_page.dart';
 import '../pages/map_page.dart';
+import '../pages/qr_page.dart'; // ← Make sure to create this page
 
 class UserScaffold extends StatefulWidget {
   const UserScaffold({super.key});
@@ -43,6 +44,8 @@ class _UserScaffoldState extends State<UserScaffold> {
       case 1:
         return "Map";
       case 2:
+        return "QR Scan";
+      case 3:
         return "Settings";
       default:
         return "Dashboard";
@@ -62,6 +65,8 @@ class _UserScaffoldState extends State<UserScaffold> {
       case 1:
         return const MapPage();
       case 2:
+        return const QRPage(); // ← Create this page
+      case 3:
         return SettingsPage(username: _username ?? '');
       default:
         return Container();
@@ -71,23 +76,28 @@ class _UserScaffoldState extends State<UserScaffold> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Ensure no black shows through
+      backgroundColor: const Color(0xFFFFF8F0), // Warm parchment-like base
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text(_getTitle()), // Optional dynamic title
-        foregroundColor: Colors.black,
+        backgroundColor: const Color(0xFF6B4F27), // Deep heritage brown
+        title: Text(_getTitle(), style: const TextStyle(color: Colors.white)),
+        iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,
       ),
-      body: SafeArea(child: _getBody()), // Wrap to avoid system insets
+      body: _getBody(),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        backgroundColor: Colors.white,
-        selectedItemColor: Colors.blue,
+        backgroundColor: const Color(0xFFFFF8F0),
+        selectedItemColor: const Color(0xFFD4AF37), // Royal gold
         unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(icon: Icon(Icons.map), label: "Map"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.qr_code_scanner),
+            label: "Scan QR",
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
             label: "Settings",
