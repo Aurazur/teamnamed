@@ -44,8 +44,6 @@ class _UserScaffoldState extends State<UserScaffold> {
       case 1:
         return "Map";
       case 2:
-        return "QR Scan";
-      case 3:
         return "Settings";
       default:
         return "Dashboard";
@@ -65,8 +63,6 @@ class _UserScaffoldState extends State<UserScaffold> {
       case 1:
         return const MapPage();
       case 2:
-        return const QRPage(); // ← Create this page
-      case 3:
         return SettingsPage(username: _username ?? '');
       default:
         return Container();
@@ -94,10 +90,6 @@ class _UserScaffoldState extends State<UserScaffold> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(icon: Icon(Icons.map), label: "Map"),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.qr_code_scanner),
-            label: "Scan QR",
-          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
             label: "Settings",
