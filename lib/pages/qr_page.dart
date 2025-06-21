@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 
 class QRPage extends StatefulWidget {
   const QRPage({super.key});
@@ -24,55 +25,90 @@ class _QRPageState extends State<QRPage> with SingleTickerProviderStateMixin {
     _user = FirebaseAuth.instance.currentUser;
   }
 
-  Future<void> _simulateQRScan() async {
-    final badgeId = _badgeIdController.text.trim();
+  Future<bool> _isWithinDistance(String badgeId) async {
+    final pos = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+    final siteDoc = await FirebaseFirestore.instance
+        .collection('heritageSites')
+        .doc(badgeId)
+        .get();
+    if (!siteDoc.exists) return false;
 
-    if (badgeId.isEmpty || _user == null) {
-      setState(() {
-        _status = "Please enter a badge ID and make sure you're logged in.";
-      });
+    final gp = siteDoc['location'] as GeoPoint;
+    final dist = Geolocator.distanceBetween(
+      pos.latitude,
+      pos.longitude,
+      gp.latitude,
+      gp.longitude,
+    );
+    return dist <= 100;
+  }
+
+  Future<void> _simulateQRScan() async {
+    final input = _badgeIdController.text.trim();
+    final user = _user;
+    if (input.isEmpty || user == null) {
+      setState(() => _status = "Enter badge code and log in first.");
       return;
     }
 
     setState(() => _loading = true);
-
     try {
+      final parts = input.split(":");
+      final badgeId = parts[0];
+      final partId = parts.length > 1 ? parts[1] : null;
+
+      final badgeSnap = await FirebaseFirestore.instance
+          .collection("badges")
+          .doc(badgeId)
+          .get();
+      if (!badgeSnap.exists) {
+        setState(() => _status = "Badge '$badgeId' not found.");
+        return;
+      }
+
+      final within = await _isWithinDistance(badgeId);
+      if (!within) {
+        setState(() => _status = "Move closer to the site to unlock.");
+        return;
+      }
+
       final userBadgeRef = FirebaseFirestore.instance
           .collection("users")
-          .doc(_user!.uid)
+          .doc(user.uid)
           .collection("badges")
           .doc(badgeId);
+      final userBadgeSnap = await userBadgeRef.get();
 
-      final badgeDoc = await userBadgeRef.get();
-
-      if (badgeDoc.exists) {
-        setState(() {
-          _status = "You already have this badge!";
-        });
-      } else {
-        final badgeMeta = await FirebaseFirestore.instance
-            .collection("badges")
-            .doc(badgeId)
-            .get();
-
-        if (!badgeMeta.exists) {
-          setState(() {
-            _status = "Badge ID not found in the system.";
-          });
+      if (partId == null) {
+        if (userBadgeSnap.exists) {
+          setState(() => _status = "Badge '$badgeId' already unlocked.");
         } else {
           await userBadgeRef.set({
             "unlockedParts": [],
             "earnedAt": FieldValue.serverTimestamp(),
           });
-          setState(() {
-            _status = "Badge '$badgeId' successfully added!";
-          });
+          setState(() => _status = "Unlocked badge '$badgeId'!");
+        }
+      } else {
+        if (!userBadgeSnap.exists) {
+          setState(() => _status = "Unlock badge first before adding parts.");
+        } else {
+          final existing = List<String>.from(
+            userBadgeSnap['unlockedParts'] ?? [],
+          );
+          if (existing.contains(partId)) {
+            setState(() => _status = "Part '$partId' already unlocked.");
+          } else {
+            existing.add(partId);
+            await userBadgeRef.update({"unlockedParts": existing});
+            setState(() => _status = "Unlocked part '$partId'!");
+          }
         }
       }
     } catch (e) {
-      setState(() {
-        _status = "An error occurred: $e";
-      });
+      setState(() => _status = "Error: $e");
     } finally {
       setState(() => _loading = false);
     }
@@ -90,7 +126,9 @@ class _QRPageState extends State<QRPage> with SingleTickerProviderStateMixin {
     final qrData = _user != null ? "USER:${_user!.uid}" : "UNKNOWN";
 
     return Scaffold(
+      backgroundColor: const Color(0xFFFFF8F0),
       appBar: AppBar(
+        backgroundColor: const Color(0xFFD4AF37),
         title: const Text("QR Badge"),
         bottom: TabBar(
           controller: _tabController,
@@ -103,7 +141,6 @@ class _QRPageState extends State<QRPage> with SingleTickerProviderStateMixin {
       body: TabBarView(
         controller: _tabController,
         children: [
-          // TAB 1: My QR Code
           Center(
             child: _user == null
                 ? const Text("Please log in to see your QR code.")
@@ -124,7 +161,6 @@ class _QRPageState extends State<QRPage> with SingleTickerProviderStateMixin {
                   ),
           ),
 
-          // TAB 2: Manual badge code entry
           Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(

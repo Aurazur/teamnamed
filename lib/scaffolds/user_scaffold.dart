@@ -71,9 +71,9 @@ class _UserScaffoldState extends State<UserScaffold> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF8F0), // Warm parchment-like base
+      backgroundColor: const Color(0xFFFFF8F0),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF6B4F27), // Deep heritage brown
+        backgroundColor: const Color(0xFF6B4F27),
         title: Text(_getTitle(), style: const TextStyle(color: Colors.white)),
         iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,
@@ -83,7 +83,7 @@ class _UserScaffoldState extends State<UserScaffold> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         backgroundColor: const Color(0xFFFFF8F0),
-        selectedItemColor: const Color(0xFFD4AF37), // Royal gold
+        selectedItemColor: const Color(0xFFD4AF37),
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
         items: const [
