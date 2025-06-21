@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1090810922891",
+    "project_id": "teamnamed-imaginehack",
+    "storage_bucket": "teamnamed-imaginehack.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1090810922891:android:da25d4f6c9becf067f118e",
+        "android_client_info": {
+          "package_name": "com.example.teamnamed"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1090810922891-f6dqjl6rnoolajnd30nv27ldcr357rie.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAry8wlyl9A4wUW9edFgPxWEQ545EO1QvQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1090810922891-f6dqjl6rnoolajnd30nv27ldcr357rie.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
