@@ -15,18 +15,21 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Cultural Heritage App',
       theme: ThemeData(primarySwatch: Colors.teal),
-      home: FutureBuilder<Widget>(
-        future: StartupService.getStartPage(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return LogoPage();
-          } else if (snapshot.hasData) {
-            return snapshot.data!;
-          } else {
-            return LogoPage();
-          }
-        },
-      ),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => FutureBuilder<Widget>(
+          future: StartupService.getStartPage(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return LogoPage();
+            } else if (snapshot.hasData) {
+              return snapshot.data!;
+            } else {
+              return LogoPage();
+            }
+          },
+        ),
+      },
     );
   }
 }

@@ -222,16 +222,31 @@ class AllSitesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("All Nearby Sites")),
+      backgroundColor: const Color(0xFFFFF3E0),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF6B4F27),
+        title: const Text(
+          "All Nearby Sites",
+          style: TextStyle(color: Colors.white),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: sites.length,
         itemBuilder: (context, index) {
           final site = sites[index];
           return Card(
+            color: Colors.white,
             margin: const EdgeInsets.only(bottom: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: ListTile(
-              title: Text(site['name']!),
+              title: Text(
+                site['name']!,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
               subtitle: Text("${site['type']} • ${site['distance']}"),
               trailing: const Icon(Icons.arrow_forward_ios),
               onTap: () {
@@ -275,16 +290,35 @@ class AllBadgesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("All Badges")),
+      backgroundColor: const Color(0xFFFFF3E0),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF6B4F27),
+        title: const Text("All Badges", style: TextStyle(color: Colors.white)),
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: badges.length,
         itemBuilder: (context, index) {
           final badge = badges[index];
+          final borderColor = badge['tier'] == 'Gold'
+              ? const Color(0xFFFFD700)
+              : badge['tier'] == 'Silver'
+              ? const Color(0xFFC0C0C0)
+              : const Color(0xFFCD7F32);
+
           return Card(
+            color: Colors.white,
             margin: const EdgeInsets.only(bottom: 12),
+            shape: RoundedRectangleBorder(
+              side: BorderSide(color: borderColor, width: 2),
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: ListTile(
-              title: Text(badge['name']!),
+              title: Text(
+                badge['name']!,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
               subtitle: Text("Tier: ${badge['tier']}"),
               trailing: const Icon(Icons.star),
               onTap: () {
