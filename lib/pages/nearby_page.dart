@@ -78,7 +78,11 @@ class _NearbyPageState extends State<NearbyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Nearby Heritage Sites')),
+      backgroundColor: const Color(0xFFFFF8F0),
+      appBar: AppBar(
+        title: const Text('Nearby Heritage Sites'),
+        backgroundColor: const Color(0xFFD4AF37),
+      ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
@@ -87,8 +91,23 @@ class _NearbyPageState extends State<NearbyPage> {
                 final site = _nearbySites[index];
                 return ListTile(
                   title: Text(site['name']),
-                  subtitle: Text(
-                    '${site['description']} • ${formatDistance(site['distance'])}',
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        site['description'],
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        formatDistance(site['distance']),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
                   ),
                   leading: const Icon(Icons.location_on, color: Colors.teal),
                 );

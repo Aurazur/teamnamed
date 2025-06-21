@@ -19,7 +19,11 @@ class BadgePage extends StatelessWidget {
         .collection('badges');
 
     return Scaffold(
-      appBar: AppBar(title: const Text("My Badges")),
+      backgroundColor: const Color(0xFFFFF8F0),
+      appBar: AppBar(
+        title: const Text("My Badges"),
+        backgroundColor: const Color(0xFFD4AF37),
+      ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _loadBadgesWithUserProgress(badgeRef, userBadgeRef),
         builder: (context, snapshot) {
@@ -34,15 +38,44 @@ class BadgePage extends StatelessWidget {
             itemCount: badges.length,
             itemBuilder: (context, index) {
               final badge = badges[index];
+              final isOwned = badge['isOwned'] as bool;
+              final progress = badge['required'] > 0
+                  ? (badge['unlocked'] / badge['required']).clamp(0.0, 1.0)
+                  : 0.0;
 
-              return ListTile(
-                title: Text(badge['name']),
-                subtitle: Text(
-                  "${badge['tier']} • ${badge['unlocked']} / ${badge['required']} parts unlocked",
-                ),
-                trailing: Icon(
-                  Icons.emoji_events,
-                  color: _getTierColor(badge['tier']),
+              final progressColor = progress == 0 ? Colors.red : Colors.green;
+
+              return Opacity(
+                opacity: isOwned ? 1.0 : 0.4,
+                child: Column(
+                  children: [
+                    ListTile(
+                      title: Text(badge['name']),
+                      subtitle: Text(
+                        isOwned
+                            ? "${badge['tier']} • ${badge['unlocked']} / ${badge['required']} parts unlocked"
+                            : "Not earned",
+                      ),
+                      trailing: isOwned
+                          ? Icon(
+                              Icons.emoji_events,
+                              color: _getTierColor(badge['tier']),
+                            )
+                          : const Icon(Icons.lock_outline, color: Colors.grey),
+                    ),
+                    if (isOwned)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: LinearProgressIndicator(
+                          value: progress,
+                          color: progressColor,
+                          backgroundColor: Colors.grey[300],
+                          minHeight: 6,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    const Divider(),
+                  ],
                 ),
               );
             },
@@ -83,6 +116,7 @@ class BadgePage extends StatelessWidget {
         'unlocked': unlockedCount,
         'required': partsRequired,
         'tier': tier,
+        'isOwned': userDoc.exists,
       };
 
       if (userDoc.exists) {
@@ -98,7 +132,7 @@ class BadgePage extends StatelessWidget {
   String _getCalculatedTier(int unlocked, int required) {
     if (unlocked >= required) return "Gold";
     if (unlocked >= (required / 2).ceil()) return "Silver";
-    if (unlocked > 0) return "Bronze";
+    if (unlocked >= 0) return "Bronze";
     return "Not Owned";
   }
 
@@ -111,7 +145,7 @@ class BadgePage extends StatelessWidget {
       case "Bronze":
         return Colors.brown;
       default:
-        return Colors.black45;
+        return Colors.grey;
     }
   }
 }

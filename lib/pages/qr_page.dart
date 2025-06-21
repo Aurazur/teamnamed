@@ -12,81 +12,95 @@ class QRPage extends StatefulWidget {
 class _QRPageState extends State<QRPage> {
   final TextEditingController _badgeIdController = TextEditingController();
   String _status = '';
+  bool _loading = false;
 
   Future<void> _simulateQRScan() async {
     final badgeId = _badgeIdController.text.trim();
-    final userId = FirebaseAuth.instance.currentUser?.uid;
+    final user = FirebaseAuth.instance.currentUser;
 
-    if (badgeId.isEmpty || userId == null) {
+    if (badgeId.isEmpty || user == null) {
       setState(() {
-        _status = "Invalid badge ID or user not logged in.";
+        _status = "Please enter a badge ID and make sure you're logged in.";
       });
       return;
     }
 
-    final userBadgeRef = FirebaseFirestore.instance
-        .collection("users")
-        .doc(userId)
-        .collection("badges")
-        .doc(badgeId);
+    setState(() => _loading = true);
 
-    final badgeDoc = await userBadgeRef.get();
-
-    if (badgeDoc.exists) {
-      setState(() {
-        _status = "You already have this badge!";
-      });
-    } else {
-      final badgeMeta = await FirebaseFirestore.instance
+    try {
+      final userBadgeRef = FirebaseFirestore.instance
+          .collection("users")
+          .doc(user.uid)
           .collection("badges")
-          .doc(badgeId)
-          .get();
+          .doc(badgeId);
 
-      if (!badgeMeta.exists) {
+      final badgeDoc = await userBadgeRef.get();
+
+      if (badgeDoc.exists) {
         setState(() {
-          _status = "Badge ID not found in the system.";
+          _status = "You already have this badge!";
         });
-        return;
+      } else {
+        final badgeMeta = await FirebaseFirestore.instance
+            .collection("badges")
+            .doc(badgeId)
+            .get();
+
+        if (!badgeMeta.exists) {
+          setState(() {
+            _status = "Badge ID not found in the system.";
+          });
+        } else {
+          await userBadgeRef.set({
+            "unlockedParts": [],
+            "earnedAt": FieldValue.serverTimestamp(),
+          });
+          setState(() {
+            _status = "Badge '$badgeId' successfully added!";
+          });
+        }
       }
-
-      await userBadgeRef.set({
-        "unlockedParts": [],
-        "earnedAt": FieldValue.serverTimestamp(),
-      });
-
+    } catch (e) {
       setState(() {
-        _status = "Badge '$badgeId' successfully added to your profile!";
+        _status = "An error occurred: $e";
       });
+    } finally {
+      setState(() => _loading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text("Simulate QR Badge Unlock"),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _badgeIdController,
-            decoration: const InputDecoration(
-              labelText: "Enter Badge ID (e.g. TAYLORS-COLLEGE)",
-              border: OutlineInputBorder(),
+    return Scaffold(
+      appBar: AppBar(title: const Text("Simulate QR Scan")),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text("Simulate QR Badge Unlock"),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _badgeIdController,
+              decoration: const InputDecoration(
+                labelText: "Enter Badge ID (e.g. TAYLORS-COLLEGE)",
+                border: OutlineInputBorder(),
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _simulateQRScan,
-            child: const Text("Simulate QR Scan"),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            _status,
-            style: const TextStyle(fontSize: 16, color: Colors.teal),
-          ),
-        ],
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _loading ? null : _simulateQRScan,
+              child: _loading
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : const Text("Simulate QR Scan"),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              _status,
+              style: const TextStyle(fontSize: 16, color: Colors.teal),
+            ),
+          ],
+        ),
       ),
     );
   }

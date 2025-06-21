@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../pages/dashboard_page.dart';
 import '../pages/settings_page.dart';
 import '../pages/map_page.dart';
-import '../pages/qr_page.dart'; // ← Make sure to create this page
 
 class UserScaffold extends StatefulWidget {
   const UserScaffold({super.key});
