@@ -88,7 +88,6 @@ class _SettingsPageState extends State<SettingsPage> {
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            // Profile Section
             Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -144,7 +143,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
             const SizedBox(height: 30),
 
-            // Preferences Section
             Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -217,7 +215,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
             const SizedBox(height: 40),
 
-            // Logout
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(

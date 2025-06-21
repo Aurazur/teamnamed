@@ -21,7 +21,6 @@ class _NearbyPageState extends State<NearbyPage> {
   }
 
   Future<void> _fetchNearbySites() async {
-    // Request location permission
     var permission = await Permission.location.request();
     if (!permission.isGranted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -30,12 +29,10 @@ class _NearbyPageState extends State<NearbyPage> {
       return;
     }
 
-    // Get current location
     Position position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     );
 
-    // Fetch heritage sites from Firestore
     final snapshot = await FirebaseFirestore.instance
         .collection('heritageSites')
         .get();
@@ -60,7 +57,6 @@ class _NearbyPageState extends State<NearbyPage> {
       };
     }).toList();
 
-    // Sort by distance (closest first)
     loadedSites.sort((a, b) => a['distance'].compareTo(b['distance']));
 
     setState(() {

@@ -6,8 +6,12 @@ class LogoPage extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: Text(
-          "🌀 Cultural Heritage App",
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          "🌀 JoMalaysia",
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
       ),
     );

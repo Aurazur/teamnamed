@@ -75,13 +75,13 @@ class _FoodPageState extends State<FoodPage> {
                       lat,
                       lng,
                     ) /
-                    1000; // in KM
+                    1000;
 
                 if (distance > 5.0) return null;
 
                 return {'data': data, 'distance': distance};
               })
-              .whereType<Map<String, dynamic>>() // Filter out nulls
+              .whereType<Map<String, dynamic>>()
               .toList();
 
           return ListView.separated(

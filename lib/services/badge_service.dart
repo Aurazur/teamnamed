@@ -25,7 +25,7 @@ Future<void> unlockBadgePart(String badgeId, String partId) async {
       .collection('user_badges')
       .doc('$userId-$badgeId')
       .get();
-  if (!badgeDoc.exists) return; // Badge must be unlocked first
+  if (!badgeDoc.exists) return;
 
   final data = badgeDoc.data()!;
   final partsUnlocked = List<String>.from(data['partsUnlocked']);
