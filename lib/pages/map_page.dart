@@ -11,6 +11,20 @@ class MapPage extends StatefulWidget {
   State<MapPage> createState() => _MapPageState();
 }
 
+BitmapDescriptor? _heritageIcon;
+BitmapDescriptor? _foodIcon;
+
+Future<void> _loadCustomIcons() async {
+  _heritageIcon = await BitmapDescriptor.fromAssetImage(
+    const ImageConfiguration(size: Size(48, 48)),
+    'lib/assets/heritage.png',
+  );
+  _foodIcon = await BitmapDescriptor.fromAssetImage(
+    const ImageConfiguration(size: Size(48, 48)),
+    'lib/assets/food.png',
+  );
+}
+
 class _MapPageState extends State<MapPage> {
   GoogleMapController? _mapController;
   LatLng? _currentLocation;
@@ -20,8 +34,11 @@ class _MapPageState extends State<MapPage> {
   @override
   void initState() {
     super.initState();
-    _getLocationPermissionAndPosition();
-    _fetchHeritageSites();
+    _loadCustomIcons().then((_) {
+      _getLocationPermissionAndPosition();
+      _fetchHeritageSites();
+      _fetchFoodSites();
+    });
   }
 
   Future<void> _getLocationPermissionAndPosition() async {
@@ -39,6 +56,29 @@ class _MapPageState extends State<MapPage> {
         const SnackBar(content: Text("Location permission denied")),
       );
     }
+  }
+
+  List<Map<String, dynamic>> _foodPlaces = [];
+
+  Future<void> _fetchFoodSites() async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('localFood')
+        .get();
+    final foods = snapshot.docs.map((doc) {
+      final data = doc.data();
+      return {
+        "id": doc.id,
+        "name": data["name"],
+        "location": LatLng(
+          (data["location"] as GeoPoint).latitude,
+          (data["location"] as GeoPoint).longitude,
+        ),
+      };
+    }).toList();
+
+    setState(() {
+      _foodPlaces = foods;
+    });
   }
 
   Future<void> _fetchHeritageSites() async {
@@ -63,17 +103,28 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
-  Set<Marker> _buildHeritageMarkers() {
-    return _heritageSites.map((site) {
+  Set<Marker> _buildAllMarkers() {
+    final heritageMarkers = _heritageSites.map((site) {
       return Marker(
         markerId: MarkerId(site['id']),
         position: site['location'],
-        infoWindow: InfoWindow(
-          title: site['name'],
-          snippet: site['description'],
-        ),
+        icon: _heritageIcon ?? BitmapDescriptor.defaultMarker,
+        infoWindow: InfoWindow(title: site['name']),
       );
-    }).toSet();
+    });
+
+    final foodMarkers = _foodPlaces.map((food) {
+      return Marker(
+        markerId: MarkerId(food['id']),
+        position: food['location'],
+        icon:
+            _foodIcon ??
+            BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
+        infoWindow: InfoWindow(title: food['name']),
+      );
+    });
+
+    return {...heritageMarkers, ...foodMarkers};
   }
 
   void _searchSite() {
@@ -126,7 +177,7 @@ class _MapPageState extends State<MapPage> {
                     onMapCreated: (controller) {
                       _mapController = controller;
                     },
-                    markers: _buildHeritageMarkers(),
+                    markers: _buildAllMarkers(),
                   ),
                 ),
               ],

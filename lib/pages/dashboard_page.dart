@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'qr_page.dart';
 import 'badge_page.dart';
 import 'nearby_page.dart';
+import 'food_page.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -29,7 +30,16 @@ class DashboardPage extends StatelessWidget {
           );
         },
       },
-      {'label': 'Local Food Deals', 'icon': Icons.restaurant, 'onTap': () {}},
+      {
+        'label': 'Local Food Deals',
+        'icon': Icons.restaurant,
+        'onTap': () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const FoodPage()),
+          );
+        },
+      },
       {'label': 'Audio Guides', 'icon': Icons.headphones, 'onTap': () {}},
       {'label': 'Multilingual Info', 'icon': Icons.language, 'onTap': () {}},
       {
