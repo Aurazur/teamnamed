@@ -19,7 +19,7 @@ The approaches we took to solve these problems are as follows:
 We used Flutter to create this mobile application, pairing with Firebase and the Google Maps API.
 
 ### AI Assistance
-ChatGPT has assisted us in implementing and integrating the Firebase and Google Maps API, along with some bug fixes and error patching (such as specific dependency versions, Android SDK mismatches or the QR scanner, but failed). </br>
+ChatGPT has assisted us in implementing and integrating the Firebase and Google Maps API (and distance calculating formulas), along with some bug fixes and error patching (such as specific dependency versions, Android SDK mismatches or the QR scanner, but failed). </br>
 ChatGPT has also assisted us in acquiring information such as specific government grants and its scopes, and helping us structure our Firebase properly (using Maps inside of Arrays and so on).
 
 ## Getting Started
