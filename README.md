@@ -1,5 +1,5 @@
 # teamnamed
-Our team name is Teamnamed, and our group members are Jeffrey Cheong, Brian Chong and Cameron Stuart.</br>
+Our team name is Teamnamed, and our group members are Jeffrey Cheong, Chong Ji Kent and Cameron Stuart.</br>
 The topic we selected is Digital Heritage and Tourism.</br>
 Our application is named JoMalaysia, a wordplay of Jom and Malaysia!
 
